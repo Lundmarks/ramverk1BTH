@@ -81,7 +81,9 @@ class IpValidController implements ContainerInjectableInterface
         } else {
             // IP is not set!!
             $page = $this->di->get("page");
-            $redirectUrl = $_SERVER['PHP_SELF'];
+            if (isset($_SERVER['REQUEST_URI'])) {
+                $redirectUrl = $_SERVER['REQUEST_URI'];
+            }
             $page->add("anax/v2/article/default", [
                 "content" => '<h1>Welcome to ipvalid!</h1>
                 <h5>Information</h5>

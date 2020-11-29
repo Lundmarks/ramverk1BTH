@@ -45,6 +45,9 @@ class IpValidControllerTest extends TestCase
         $controller = new IpValidController();
         $controller->setDI($this->di);
 
+        unset($_POST["ip"]);
+        unset($_GET["ip"]);
+
         // Test the controller action
         $res = $controller->indexActionGet();
         $body = $res->getBody();
@@ -112,8 +115,12 @@ class IpValidControllerTest extends TestCase
         $controller = new IpValidController();
         $controller->setDI($this->di);
 
+        unset($_POST["ip"]);
+        unset($_GET["ip"]);
+
         // Test the controller action
         $res = $controller->indexActionPost();
+        // var_dump($res);
         $this->assertEquals("Body is missing, send IP in body.", $res[0]["result"]);
     }
 
@@ -140,6 +147,9 @@ class IpValidControllerTest extends TestCase
         // Setup the controller
         $controller = new IpValidController();
         $controller->setDI($this->di);
+
+        unset($_POST["ip"]);
+        unset($_GET["ip"]);
 
         // Test the controller action
         $_POST["ip"] = "2001:4998:44:3507::8000";

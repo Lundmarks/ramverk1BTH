@@ -44,6 +44,11 @@ return [
             "title" => "Validera IPv4 eller IPv6!",
         ],
         [
+            "text" => "IP-geotaggning (02)",
+            "url" => "iploc",
+            "title" => "Lokalisera IPv4 eller IPv6!",
+        ],
+        [
             "text" => "Verktyg",
             "url" => "verktyg",
             "title" => "Verktyg och möjligheter för utveckling.",
