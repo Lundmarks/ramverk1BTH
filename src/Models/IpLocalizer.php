@@ -39,4 +39,9 @@ class IpLocalizer
     {
         return $this->ipAddress;
     }
+
+    public function getLatLong()
+    {
+        return array($this->ipData->latitude, $this->ipData->longitude);
+    }
 }
