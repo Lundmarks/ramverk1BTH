@@ -8,7 +8,8 @@
         "psr-4": {"Anax\\": "src/"}
     },
     "require": {
-        "anax/anax-ramverk1-me": "^1.0.0"
+        "anax/anax-ramverk1-me": "^1.0.0",
+        "lundmark/forecaster": "^1.2"
     },
     "require-dev": {
         "phpunit/phpunit": "^7"

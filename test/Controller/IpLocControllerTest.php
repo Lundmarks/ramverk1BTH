@@ -170,7 +170,8 @@ class IpLocControllerTest extends TestCase
         $this->assertEquals("IPv4", $resTwo[0]);
         $this->assertEquals("media-router-fp74.prod.media.vip.gq1.yahoo.com", $resTwo[1]);
         $this->assertEquals("IPv6", $resThree[0]);
-        $this->assertEquals(false, $resFour[0]);
+        $this->assertEquals(false, $resFour);
+        // $this->assertEquals(false, $resFour[0]);
     }
 
     /**
