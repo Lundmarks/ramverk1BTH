@@ -4,19 +4,11 @@ namespace Anax\Models;
 
 class Forecaster
 {
-
-
     protected $owmApiKey = "";
     protected $geoApiKey = "";
 
     protected $latitude = "";
     protected $longitude = "";
-
-    // protected $temperature = ""; //celsius
-    // protected $feelsLike = ""; //also celsius
-    // protected $windSpeed = ""; //m/s
-    // protected $weatherMain = "";
-    // protected $weatherDesc = "";
     protected $todaysWeather = array();
 
     protected $dailyDate = [];
@@ -28,20 +20,14 @@ class Forecaster
     protected $historicalTemp = [];
     protected $historicalWind = [];
 
-    // ACTUAL USEFUL FUNCS
-
     public function getWeather($inputLat, $inputLong)
     {
         $this->latitude = $inputLat;
         $this->longitude = $inputLong;
-        // $configFile = file_get_contents("../config/config.json");
-        // $configFile = json_decode($configFile);
-        // $owmApiKey = $configFile->openweathermap->apikey;
         $owmApiKey = $this->owmApiKey;
 
-        // echo "<br>Trying to fetch weather with apikey [r40]: " . $owmApiKey;
-
         // Fetching epoch times for last 5 days
+        $epochDays = array();
         $epochDays[0] = strtotime("-5 days");
         $epochDays[1] = strtotime("-4 days");
         $epochDays[2] = strtotime("-3 days");
@@ -71,6 +57,7 @@ class Forecaster
 
         $responseArr = array();
         $master = curl_multi_init();
+        $running = 0;
 
         for ($i = 0; $i < $urlCount; $i++) {
             $url =$urls[$i];
@@ -83,6 +70,7 @@ class Forecaster
             curl_multi_exec($master, $running);
         } while ($running > 0);
 
+        $results = array();
         for ($i = 0; $i < $urlCount; $i++) {
             $results[$i] = curl_multi_getcontent($responseArr[$i]);
             $results[$i] = json_decode($results[$i]);
@@ -98,16 +86,10 @@ class Forecaster
 
             $this->todaysWeather["weatherMain"] = @$results[0]->current->weather[0]->main;
             $this->todaysWeather["weatherDesc"] = @$results[0]->current->weather[0]->description;
-            // $this->temperature = @$results[0]->current->temp;
-            // $this->feelsLike = @$results[0]->current->feels_like;
-            // $this->windSpeed = @$results[0]->current->wind_speed;
-            //
-            // $this->weatherMain = @$results[0]->current->weather[0]->main;
-            // $this->weatherDesc = @$results[0]->current->weather[0]->description;
 
             // Weather next 7 days
             $dailySize = @sizeof($results[0]->daily);
-            for ($i=1; $i < @$dailySize; $i++) {
+            for ($i = 1; $i < @$dailySize; $i++) {
                 $this->dailyDate[$i] = $results[0]->daily[$i]->dt;
                 $this->dailyDesc[$i] = $results[0]->daily[$i]->weather[0]->description;
                 $this->dailyTemp[$i] = $results[0]->daily[$i]->temp->day;
@@ -116,7 +98,7 @@ class Forecaster
 
             // Weather last 5 days
             $resultSize = sizeof($results);
-            for ($i=1; $i < $resultSize; $i++) {
+            for ($i = 1; $i < $resultSize; $i++) {
                 $this->historicalDate[$i] = @$results[$i]->current->dt;
                 $this->historicalDesc[$i] = @$results[$i]->current->weather[0]->description;
                 $this->historicalTemp[$i] = @$results[$i]->current->temp;
@@ -186,24 +168,24 @@ class Forecaster
         // Returned as string, HTML
         $htmlTable = "<table><thead><tr><th></th>"; //First cell is empty
         $dailyDateSize = sizeof($this->dailyDate);
-        for ($i=1; $i < $dailyDateSize; $i++) {
+        for ($i = 1; $i < $dailyDateSize; $i++) {
             $epochDate = $this->dailyDate[$i];
             $day = date("D j", $epochDate);
             $htmlTable .= "<th>" . $day . "</th>";
         }
         $htmlTable .= "</tr></thead><tbody><tr><td><b>Beskrivning</b></td>";
         $dailyDescSize = sizeof($this->dailyDesc);
-        for ($i=1; $i < $dailyDescSize; $i++) {
+        for ($i = 1; $i < $dailyDescSize; $i++) {
             $htmlTable .= "<td>" . $this->dailyDesc[$i] . "</td>";
         }
         $htmlTable .= "</tr><tr><td><b>Temperatur</b></td>";
         $dailyTSize = sizeof($this->dailyTemp);
-        for ($i=1; $i < $dailyTSize; $i++) {
+        for ($i = 1; $i < $dailyTSize; $i++) {
             $htmlTable .= "<td>" . $this->dailyTemp[$i] . "°C</td>";
         }
         $htmlTable .= "</tr><tr><td><b>Vindhastighet</b></td>";
         $dailyWSize = sizeof($this->dailyWind);
-        for ($i=1; $i < $dailyWSize; $i++) {
+        for ($i = 1; $i < $dailyWSize; $i++) {
             $htmlTable .= "<td>" . $this->dailyWind[$i] . "m/s</td>";
         }
         $htmlTable .= "</tr></tbody></table>";
@@ -216,24 +198,24 @@ class Forecaster
         // Returned as string, HTML
         $htmlTable = "<table><thead><tr><th></th>"; //First cell is empty
         $histDateSize = sizeof($this->historicalDate);
-        for ($i=1; $i < $histDateSize+1; $i++) {
+        for ($i = 1; $i < $histDateSize + 1; $i++) {
             $epochDate = $this->historicalDate[$i];
             $day = date("D j", $epochDate);
             $htmlTable .= "<th>" . $day . "</th>";
         }
         $htmlTable .= "</tr></thead><tbody><tr><td><b>Beskrivning</b></td>";
         $histDescSize = sizeof($this->historicalDesc);
-        for ($i=1; $i < $histDescSize+1; $i++) {
+        for ($i = 1; $i < $histDescSize + 1; $i++) {
             $htmlTable .= "<td>" . $this->historicalDesc[$i] . "</td>";
         }
         $htmlTable .= "</tr><tr><td><b>Temperatur</b></td>";
         $dailyWSize = sizeof($this->historicalTemp);
-        for ($i=1; $i < $dailyWSize+1; $i++) {
+        for ($i = 1; $i < $dailyWSize + 1; $i++) {
             $htmlTable .= "<td>" . $this->historicalTemp[$i] . "°C</td>";
         }
         $htmlTable .= "</tr><tr><td><b>Vindhastighet</b></td>";
         $dailyWSize = sizeof($this->historicalWind);
-        for ($i=1; $i < $dailyWSize+1; $i++) {
+        for ($i = 1; $i < $dailyWSize + 1; $i++) {
             $htmlTable .= "<td>" . $this->historicalWind[$i] . "m/s</td>";
         }
         $htmlTable .= "</tr></tbody></table>";
@@ -252,6 +234,7 @@ class Forecaster
     public function getLatLong()
     {
         if ($this->latitude != "" && $this->longitude != "") {
+            $returnArray = array();
             $returnArray["lat"] = $this->latitude;
             $returnArray["long"] = $this->longitude;
             return $returnArray;
@@ -266,9 +249,10 @@ class Forecaster
             $currentArray = $this->todaysWeather;
             $dailyArray = array();
             $historicalArray = array();
+            $returnArray = array();
 
             $dailyDateSize = sizeof($this->dailyDate);
-            for ($i=1; $i < $dailyDateSize+1; $i++) {
+            for ($i = 1; $i < $dailyDateSize + 1; $i++) {
                 $arrayIdx = "forecast_" . $i;
                 $dailyArray[$arrayIdx]["date"] = $this->dailyDate[$i];
                 $dailyArray[$arrayIdx]["description"] = $this->dailyDesc[$i];
@@ -276,7 +260,7 @@ class Forecaster
                 $dailyArray[$arrayIdx]["windspeed"] = $this->dailyWind[$i];
             }
             $histDateSize = sizeof($this->historicalDate);
-            for ($i=1; $i < $histDateSize+1; $i++) {
+            for ($i = 1; $i < $histDateSize + 1; $i++) {
                 $arrayIdx = "historical_" . $i;
                 $historicalArray[$arrayIdx]["date"] = $this->historicalDate[$i];
                 $historicalArray[$arrayIdx]["description"] = $this->historicalDesc[$i];

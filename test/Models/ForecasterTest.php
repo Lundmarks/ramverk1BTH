@@ -25,22 +25,13 @@ class ForecasterModelTest extends TestCase
 
         // Setup di
         $di = new DIFactoryConfig();
+        // Load Forecaster (and other services) into DI
         $di->loadServices(ANAX_INSTALL_PATH . "/config/di");
-
-        // Use a different cache dir for unit test
-        $di->get("cache")->setPath(ANAX_INSTALL_PATH . "/test/cache/anax");
 
         $this->di = $di;
 
 
         $this->di->set("forecaster", "\Anax\Models\Forecaster");
-
-        // $model = $this->di->get("forecaster");
-        // $config = $this->di->get("configuration");
-        // $keyConfig = $config->load("apikeys.php");
-        // $keyGeo = $keyConfig["config"]["geoapifyApikey"];
-        // $keyOwm = $keyConfig["config"]["openweathermapApikey"];
-        // $model->setApiKeys($keyGeo, $keyOwm);
     }
 
 
@@ -54,10 +45,17 @@ class ForecasterModelTest extends TestCase
         $testLong = "-122.05";
 
         $model = $this->di->get("forecaster");
-        $config = $this->di->get("configuration");
-        $keyConfig = $config->load("apikeys.php");
+
+        // Setting API keys manually, since cache is not working in module.
+        // Replace next three lines with the two commented to reenable $di-config.
+        $keyConfig = array();
+        $keyConfig["config"]["geoapifyApikey"] = "d3b6bb0d9aba48baa5cc68cac5c6ac6a";
+        $keyConfig["config"]["openweathermapApikey"] = "acf1a83dfb5dd2db934f4d12d3e1b97a";
+        // $config = $this->di->get("configuration");
+        // $keyConfig = $config->load("apikeys.php");
         $keyGeo = $keyConfig["config"]["geoapifyApikey"];
         $keyOwm = $keyConfig["config"]["openweathermapApikey"];
+
         $model->setApiKeys($keyGeo, $keyOwm);
 
         $model->getWeather($testLat, $testLong);
@@ -79,13 +77,19 @@ class ForecasterModelTest extends TestCase
         $testLong = "-122.05";
 
         $model = $this->di->get("forecaster");
-        $config = $this->di->get("configuration");
-        $keyConfig = $config->load("apikeys.php");
+
+        // Setting API keys manually, since cache is not working in module.
+        // Replace next three lines with the two commented to reenable $di-config.
+        $keyConfig = array();
+        $keyConfig["config"]["geoapifyApikey"] = "d3b6bb0d9aba48baa5cc68cac5c6ac6a";
+        $keyConfig["config"]["openweathermapApikey"] = "acf1a83dfb5dd2db934f4d12d3e1b97a";
+        // $config = $this->di->get("configuration");
+        // $keyConfig = $config->load("apikeys.php");
         $keyGeo = $keyConfig["config"]["geoapifyApikey"];
         $keyOwm = $keyConfig["config"]["openweathermapApikey"];
+
         $model->setApiKeys($keyGeo, $keyOwm);
 
-        // First, fetch latlong when weather is not fetched.
         // Latlong is empty.
         $getResult = $model->getLatLong();
         $this->assertEquals(false, $getResult);
@@ -119,10 +123,17 @@ class ForecasterModelTest extends TestCase
         $this->assertEquals(false, $getResult);
 
         // Continue setting APIkeys
-        $config = $this->di->get("configuration");
-        $keyConfig = $config->load("apikeys.php");
+
+        // Setting API keys manually, since cache is not working in module.
+        // Replace next three lines with the two commented to reenable $di-config.
+        $keyConfig = array();
+        $keyConfig["config"]["geoapifyApikey"] = "d3b6bb0d9aba48baa5cc68cac5c6ac6a";
+        $keyConfig["config"]["openweathermapApikey"] = "acf1a83dfb5dd2db934f4d12d3e1b97a";
+        // $config = $this->di->get("configuration");
+        // $keyConfig = $config->load("apikeys.php");
         $keyGeo = $keyConfig["config"]["geoapifyApikey"];
         $keyOwm = $keyConfig["config"]["openweathermapApikey"];
+
         $model->setApiKeys($keyGeo, $keyOwm);
 
         // Fetch weather
